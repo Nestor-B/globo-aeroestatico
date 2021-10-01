@@ -295,6 +295,7 @@
                     location = "#restart"
                     modal.style.left = '0%'
                     iniciar.focus()
+                    document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
                     iniciar.setAttribute('onclick', 'reiniciar()')
                     
                     clearTimeout(st1)
