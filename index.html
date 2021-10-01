@@ -268,6 +268,7 @@
         }
 
         function reiniciar(){
+            localStorage.setItem('PUNTOS', p)
             location.reload()
         }
 
@@ -322,7 +323,7 @@
             st2=setTimeout( MoverBarras, 50 )
         }
 
-        cargar = ()=>{
+        cargar = ()=>{            
             let modal = d.querySelector('#modal')
             modal.style.left = '-100%'
 
