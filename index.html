@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        @font-face {
+            font-family: arcade;
+            src: url('arcade.ttf');
+        }
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'arcade' !important;
+            z-index: 5;
+        }
+        #app{
+            position: relative;
+            height: 100vh;
+            border: 10px inset rgb(160, 159, 158);;
+            max-width: 500px;
+            overflow: hidden;
+            box-shadow: 0 0 0 10px rgb(87, 87, 87);
+            margin: auto;
+        }
+        #app #j, #app .barra, #app .burbuja{
+            position: absolute;
+        }
+        #app #j{
+            background-image: url(./globo.png);
+            background-position: center center;
+            background-size: 100% 100%;
+            width: 43px;
+            height: 60px;
+            border-radius: 17px;
+        }
+        #app .barra, #app .burbuja, #app .iman, #app .inmunidad{
+            width: 200px;
+            height: 12px;
+            top: 0;
+            background-position: center center;
+            background-size: 100% 100%;
+            background-image: url(./barra.png);
+        }
+        #app .burbuja{
+            background-image: url(./burbuja.png);
+            width: 25px;
+            height: 25px;
+        }
+        #app .iman, #app .inmunidad{
+            background-image: url(./iman.png);
+            position: absolute;
+            width: 25px;
+            height: 25px;
+        }
+        #app .inmunidad{
+            background-image: url(./super.png);
+        }
+        #app .puntos{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            font-size: 2em;
+            font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            padding: 1em 1.1em;
+            color: gray;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #modal{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            transition: 555ms;
+            justify-content: center;
+            flex-direction: column;
+        }
+        #modal button{
+            width: 200px;
+            font-family:'Verdana' !important;
+            font-weight: 900;
+            font-size: 1.2em;
+            border-radius: 0;
+            padding: .5em .4em;
+            cursor: pointer !important;
+        }
+        #modal button:hover{
+            cursor: pointer !important;
+        }
+        #modal button:focus{
+            background: rgb(30, 174, 210);
+            color: white;
+            border: 1px solid #ccc;
+            cursor: pointer !important;
+            outline: 1px solid #ccc;
+        }
+        #modal p{
+            padding: 10px;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif !important;
+        }
+        #modal h1{
+            font-size: 3.5em;
+            text-align: center;
+            color: gray;
+            margin: .3em 0;
+        }
+        #poder{
+            visibility: hidden;
+            color: chartreuse;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="app">
+        <div id="modal">
+            <img src="./globo.png" alt="">
+            <h1>Globo <br />aeroestatico</h1>
+            <button id="iniciar" onclick="cargar()">Iniciar</button>
+            <p>Haz clic en iniciar o presiona tecla Enter</p>
+        </div>
+        <div class="puntos">  
+            <span id="puntos">Puntos 0</span>
+            <span id="poder">Inmune</span>
+            <img src="./pause.png" alt="" id="pause" onclick="pausar(this)">
+        </div>
+        <div id="j"></div>
+    </div>
+
+    <script>
+        let w, d, j, b, p, st1, st2, st3, st4, st5, st6, si1, si2
+        w = window, d = document, p = 0
+        app = d.querySelector('#app')
+        pause = d.querySelector('#pause')
+
+        iniciar = d.querySelector('#iniciar')
+        stop = d.querySelector('#stop')
+        
+        let iw = innerWidth
+        let ih = innerHeight
+        let pa = false //pause
+        let ac = true
+
+        let activarIman = false
+        let inmunidadGlobo = false
+
+        N_random = (min, max)=> {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+
+        pausar = (e)=>{
+
+            if( ac ){
+                if(!pa){
+                    pause.src = './play.png'
+                    clearTimeout(st1)
+                    clearTimeout(st2)
+                    clearTimeout(st3)
+                    clearTimeout(st4)
+                    clearInterval(si1)
+                    clearInterval(si2)
+                    pa = true
+                }else{
+                    pause.src = './pause.png'
+                    pa = false
+                    CrearBarras()
+                    CrearBurbuja()
+                    MoverBarras()
+                }
+            }
+            
+        }
+
+        Control = ()=>{
+            var dm = 5
+
+            d.addEventListener('keydown', function(){
+                if(ac){
+                    if(event.keyCode == 37 && j.offsetLeft >= 2){
+                        j.style.left = (--j.offsetLeft-dm) + 'px'
+                        j.style.transform = 'rotate(-15deg)'
+                    }
+                    if(event.keyCode == 39 && j.offsetLeft <= app.offsetWidth - j.offsetWidth - 20){
+                        j.style.left = (++j.offsetLeft+dm) + 'px'
+                        j.style.transform = 'rotate(15deg)'
+                    }
+                    if(event.keyCode == 38 && j.offsetTop >= 50){
+                        j.style.top = (--j.offsetTop-dm) + 'px'
+                    }
+                    if(event.keyCode == 40 && j.offsetTop <= ih - 100){
+                        j.style.top = (++j.offsetTop+dm) + 'px'
+                    } 
+                    if(event.keyCode == 32){
+                        // pausar()
+                    }                       
+                }
+            })
+            d.addEventListener('keyup', function(){
+                if(ac){
+                    j.style.transform = 'rotate(0deg)'
+                }
+            })
+
+        }
+
+        CrearBarras = ()=>{
+            b = d.createElement('div')  
+            b.classList.add('barra')
+            b.style.left = N_random(0, app.offsetWidth - app.offsetWidth / 2) + 'px'
+            b.style.width = N_random(50, 200) + 'px'
+            b.setAttribute('data-velocidad', N_random(1, 25))
+            b.style.top = '0px'
+            app.appendChild(b)
+
+            if( p > 1111){
+                st1=setTimeout( CrearBarras, N_random(777, 1444) )
+            }else{
+                st1=setTimeout( CrearBarras, 2000 )
+            }
+        }
+
+        CrearBurbuja = ()=>{
+            b = d.createElement('div')  
+            b.classList.add('burbuja')
+            b.style.left = N_random(0, app.offsetWidth - app.offsetWidth / 2) + 'px'
+            b.style.top = '0px'
+            app.appendChild(b)
+
+            st3=setTimeout( CrearBurbuja, N_random(100, 1000) )            
+        }
+
+        CrearPoderInmune = ()=>{
+            if( inmunidadGlobo == false ){
+                b = d.createElement('div')  
+                b.classList.add('inmunidad')
+                b.style.left = N_random(0, app.offsetWidth - app.offsetWidth / 2) + 'px'
+                b.style.top = '0px'
+                app.appendChild(b) 
+            }        
+            st6 = setTimeout( CrearPoderInmune, N_random(30000, 60000) ) 
+        }        
+
+        CrearIman = ()=>{
+            b = d.createElement('div')  
+            b.classList.add('iman')
+            b.style.left = N_random(0, app.offsetWidth - app.offsetWidth / 2) + 'px'
+            b.style.top = '0px'
+            app.appendChild(b)          
+        }
+
+        function reiniciar(){
+            location.reload()
+        }
+
+        MoverBarras = ()=>{
+            let barras = d.querySelectorAll('.barra, .burbuja, .iman, .inmunidad')
+            barras.forEach((e)=>{
+                if( e.offsetTop > ih - 16 ){
+                    app.removeChild(e)
+                }
+
+                if(e.className == 'burbuja' && activarIman && j.offsetTop >= e.offsetTop && j.offsetTop - 8 <= e.offsetTop + 20){
+                    e.style.transition = '777ms'
+                    e.style.left = j.offsetLeft + 10 + 'px'
+                }
+                
+                if( inmunidadGlobo == false && e.className == 'barra' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop && j.offsetTop <= e.offsetTop + 12 ){
+                    pause.src = './stop.png'
+                    location = "#restart"
+                    modal.style.left = '0%'
+                    iniciar.focus()
+                    iniciar.setAttribute('onclick', 'reiniciar()')
+                    
+                    clearTimeout(st1)
+                    clearTimeout(st2)
+                    clearTimeout(st3)
+                    clearTimeout(st4)
+                    clearInterval(si1)
+                    clearInterval(si2)
+                    ac = false
+                }
+                else if( e.className == 'inmunidad' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop - j.offsetHeight && j.offsetTop <= e.offsetTop + 20 ){
+                    poder.style.visibility = 'visible'
+                    app.removeChild(e)
+                    inmunidadGlobo = true
+                    puntos.innerText = 'Puntos '+ ( p+=30 )
+                }                 
+                else if( e.className == 'burbuja' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop - j.offsetHeight && j.offsetTop <= e.offsetTop + 20 ){
+                    app.removeChild(e)
+                    puntos.innerText = 'Puntos '+ ( p+=10 )
+                }              
+                else if( e.className == 'iman' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop - j.offsetHeight && j.offsetTop <= e.offsetTop + 20 ){
+                    app.removeChild(e)
+                    activarIman = true
+                }                
+                else{
+                    if(ac){
+                        e.style.top = (++e.offsetTop+10) + 'px'
+                    }
+                }
+            })
+
+            st2=setTimeout( MoverBarras, 50 )
+        }
+
+        cargar = ()=>{
+            let modal = d.querySelector('#modal')
+            modal.style.left = '-100%'
+
+            j = d.querySelector('#j')
+            j.style.left = ( app.offsetWidth/2 ) - 25 + 'px' 
+            j.style.top = ( ih ) - 150 + 'px'
+
+            CrearBarras()    
+            st4 = setTimeout( CrearBurbuja, N_random(3000, 6000) )   
+            st5 = setTimeout( CrearIman, N_random(5000, 35000) )   
+            st6 = setTimeout( CrearPoderInmune, N_random(5000, 35000) )
+               
+            MoverBarras()    
+
+            Control()
+            var count1 = 0
+            si1=setInterval((e)=>{
+                if(activarIman){
+                    count1 += 1
+                    if(count1 > 10) {
+                        activarIman = false
+                        st5 = setTimeout( CrearIman, N_random(10000, 35000) )
+                    }
+                }else{
+                    count1 = 0
+                }
+
+            }, 1000) 
+            var count = 1
+            si2=setInterval((e)=>{
+                if(inmunidadGlobo){
+                    count += 1
+                    poder.innerText = "inmune "+(11 - count)
+                    if(count > 10) {
+                        inmunidadGlobo = false
+                    }
+                }else{
+                    count = 1
+                    poder.style.visibility = 'hidden'
+                }
+            }, 1000) 
+        }
+        
+        w.addEventListener('load', function(){
+            if(location.hash == "#restart"){
+                cargar()
+            }
+        })
+    </script>
+
+</body>
+</html>
