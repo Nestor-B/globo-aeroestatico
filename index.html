@@ -287,7 +287,6 @@
                     pause.src = './stop.png'
                     location = "#restart"
                     modal.style.left = '0%'
-                    localStorage.setItem('PUNTOS', p)
                     iniciar.focus()
                     iniciar.setAttribute('onclick', 'reiniciar()')
                     
@@ -304,10 +303,12 @@
                     app.removeChild(e)
                     inmunidadGlobo = true
                     puntos.innerText = 'Puntos '+ ( p+=30 )
+                    localStorage.setItem('PUNTOS', p)
                 }                 
                 else if( e.className == 'burbuja' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop - j.offsetHeight && j.offsetTop <= e.offsetTop + 20 ){
                     app.removeChild(e)
                     puntos.innerText = 'Puntos '+ ( p+=10 )
+                    localStorage.setItem('PUNTOS', p)
                 }              
                 else if( e.className == 'iman' && j.offsetLeft >= e.offsetLeft - j.offsetWidth && j.offsetLeft <= e.offsetLeft + e.offsetWidth && j.offsetTop >= e.offsetTop - j.offsetHeight && j.offsetTop <= e.offsetTop + 20 ){
                     app.removeChild(e)
