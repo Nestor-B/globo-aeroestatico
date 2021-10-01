@@ -380,6 +380,9 @@
         }
         
         w.addEventListener('load', function(){
+            if( localStorage.getItem("PUNTOS") ){
+                document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+            }
             if(location.hash == "#restart"){
                 cargar()
             }
