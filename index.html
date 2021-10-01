@@ -295,7 +295,7 @@
                     location = "#restart"
                     modal.style.left = '0%'
                     iniciar.focus()
-                    document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+                    
                     iniciar.setAttribute('onclick', 'reiniciar()')
                     
                     clearTimeout(st1)
@@ -376,13 +376,13 @@
             }, 1000) 
             
             if( localStorage.getItem("PUNTOS") ){
-                document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+                document.querySelector('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
             }
         }
         
         w.addEventListener('load', function(){
             if( localStorage.getItem("PUNTOS") ){
-                document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+                document.querySelector('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
             }
             if(location.hash == "#restart"){
                 cargar()
