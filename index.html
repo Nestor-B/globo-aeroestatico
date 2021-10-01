@@ -116,6 +116,11 @@
             color: gray;
             margin: .3em 0;
         }
+        #modal #misPuntos{
+            font-size: 2.5em;
+            text-align: center;
+            color: green;
+        }
         #poder{
             visibility: hidden;
             color: chartreuse;
@@ -133,6 +138,8 @@
             <h1>Globo <br />aeroestatico</h1>
             <button id="iniciar" onclick="cargar()">Iniciar</button>
             <p>Haz clic en iniciar o presiona tecla Enter</p>
+            <br />
+            <p id="misPuntos"></p>
         </div>
         <div class="puntos">  
             <span id="puntos">Puntos 0</span>
@@ -366,6 +373,10 @@
                     poder.style.visibility = 'hidden'
                 }
             }, 1000) 
+            
+            if( localStorage.getItem("PUNTOS") ){
+                document.querySelectorAll('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+            }
         }
         
         w.addEventListener('load', function(){
