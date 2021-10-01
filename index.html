@@ -119,7 +119,7 @@
         #modal #misPuntos{
             font-size: 1.5em;
             text-align: center;
-            color: gray;
+            color: gray !important;
         }
         #poder{
             visibility: hidden;
@@ -376,13 +376,13 @@
             }, 1000) 
             
             if( localStorage.getItem("PUNTOS") ){
-                document.querySelector('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+                document.querySelector('#misPuntos').innerText = 'Puntaje: '+localStorage.getItem("PUNTOS")
             }
         }
         
         w.addEventListener('load', function(){
             if( localStorage.getItem("PUNTOS") ){
-                document.querySelector('#misPuntos').innerText = 'Ultimo Puntaje: '+localStorage.getItem("PUNTOS")
+                document.querySelector('#misPuntos').innerText = 'Puntaje: '+localStorage.getItem("PUNTOS")
             }
             if(location.hash == "#restart"){
                 cargar()
