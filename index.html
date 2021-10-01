@@ -268,7 +268,6 @@
         }
 
         function reiniciar(){
-            localStorage.setItem('PUNTOS', p)
             location.reload()
         }
 
@@ -288,6 +287,7 @@
                     pause.src = './stop.png'
                     location = "#restart"
                     modal.style.left = '0%'
+                    localStorage.setItem('PUNTOS', p)
                     iniciar.focus()
                     iniciar.setAttribute('onclick', 'reiniciar()')
                     
